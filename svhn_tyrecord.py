@@ -36,19 +36,23 @@ def _bytes_feature(value):
 
 def convert_to_tfrecords(images, labels, fileName):
     num_examples, rows, cols, depth = images.shape
+    print(num_examples)
 
     # 写入过程
     print('Writing', fileName)
     writer = tf.python_io.TFRecordWriter(fileName)
     for index in range(num_examples):
         image_raw = images[index].tostring()
+        # if index == 1:
+        #     print(image_raw)
+        #     print(len(image_raw))
         example = tf.train.Example(features=tf.train.Features(feature={
             'height': _int64_feature(rows),
             'width': _int64_feature(cols),
             'depth': _int64_feature(depth),
             'label': _int64_feature(int(labels[index])),
             'image_raw': _bytes_feature(image_raw)}))
-    writer.write(example.SerializeToString())
+        writer.write(example.SerializeToString())
     writer.close()
 
 
@@ -61,8 +65,8 @@ def split_dataset(train_x, train_y, validation_size):
 
 
 with tf.Session() as sess:
-    train_x, train_y = data_set('train', 30000)
-    test_x, test_y = data_set('test', 10000)
+    train_x, train_y = data_set('train', 73257)
+    test_x, test_y = data_set('test', 26032)
     # extra_x, extra_y = data_set('extra', 10000)
 
     # 需要分割获得validation时用
