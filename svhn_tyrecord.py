@@ -19,8 +19,9 @@ def data_set(name, num_sample_size=10000):
     label = datadict['y'].flatten()
     label[label == 10] = 0  # 修正10--1
 
-    image = image[:num_sample_size]
-    label = label[:num_sample_size]
+    # 分割时用
+    # image = image[:num_sample_size]
+    # label = label[:num_sample_size]
     return image, label
 
 
@@ -43,9 +44,6 @@ def convert_to_tfrecords(images, labels, fileName):
     writer = tf.python_io.TFRecordWriter(fileName)
     for index in range(num_examples):
         image_raw = images[index].tostring()
-        # if index == 1:
-        #     print(image_raw)
-        #     print(len(image_raw))
         example = tf.train.Example(features=tf.train.Features(feature={
             'height': _int64_feature(rows),
             'width': _int64_feature(cols),
@@ -67,7 +65,7 @@ def split_dataset(train_x, train_y, validation_size):
 with tf.Session() as sess:
     train_x, train_y = data_set('train', 73257)
     test_x, test_y = data_set('test', 26032)
-    # extra_x, extra_y = data_set('extra', 10000)
+    extra_x, extra_y = data_set('extra', 10000)
 
     # 需要分割获得validation时用
     # train_x, train_y, valid_x, valid_y = split_dataset(train_x, train_y, 1000)
@@ -79,5 +77,5 @@ with tf.Session() as sess:
     # Convert to Examples and write the result to TFRecords.
     convert_to_tfrecords(train_x, train_y, trainFileName)
     convert_to_tfrecords(test_x, test_y, testFileName)
-    # convert_to_tfrecords(extra_x, extra_y, extraFileName)
+    convert_to_tfrecords(extra_x, extra_y, extraFileName)
     print('Over')
